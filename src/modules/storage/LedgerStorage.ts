@@ -18,6 +18,8 @@ import {
 } from 'boa-sdk-ts';
 import { Storages } from './Storages';
 
+import JSBI from 'jsbi';
+
 /**
  * The class that insert and read the ledger into the database.
  */
@@ -55,134 +57,135 @@ export class LedgerStorage extends Storages
      */
     public createTables (): Promise<void>
     {
-        let sql =
-        `CREATE TABLE IF NOT EXISTS blocks
-        (
-            height              INTEGER NOT NULL,
-            hash                BLOB    NOT NULL,
-            prev_block          BLOB    NOT NULL,
-            validators          TEXT    NOT NULL,
-            merkle_root         BLOB    NOT NULL,
-            signature           BLOB    NOT NULL,
-            tx_count            INTEGER NOT NULL,
-            enrollment_count    INTEGER NOT NULL,
-            time_stamp          INTEGER NOT NULL,
-            PRIMARY KEY(height)
-        );
+        let sql = "  CREATE TABLE IF NOT EXISTS stoa.blocks\n" +
+            "        (\n" +
+            "            height              INTEGER NOT NULL,\n" +
+            "            hash                BLOB(64)    NOT NULL,\n" +
+            "            prev_block          BLOB(64)    NOT NULL,\n" +
+            "            validators          TEXT    NOT NULL,\n" +
+            "            merkle_root         BLOB(64)    NOT NULL,\n" +
+            "            signature           BLOB(64)    NOT NULL,\n" +
+            "            tx_count            INTEGER NOT NULL,\n" +
+            "            enrollment_count    INTEGER NOT NULL,\n" +
+            "            time_stamp          INTEGER NOT NULL,\n" +
+            "            PRIMARY KEY(height)\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.enrollments\n" +
+            "        (\n" +
+            "            block_height        INTEGER NOT NULL,\n" +
+            "            enrollment_index    INTEGER NOT NULL,\n" +
+            "            utxo_key            BLOB(64)    NOT NULL,\n" +
+            "            random_seed         BLOB(64)    NOT NULL,\n" +
+            "            cycle_length        INTEGER NOT NULL,\n" +
+            "            enroll_sig          BLOB(64)    NOT NULL,\n" +
+            "            PRIMARY KEY(block_height, enrollment_index)\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.transactions\n" +
+            "        (\n" +
+            "            block_height        INTEGER NOT NULL,\n" +
+            "            tx_index            INTEGER NOT NULL,\n" +
+            "            tx_hash             BLOB(64)    NOT NULL,\n" +
+            "            type                INTEGER NOT NULL,\n" +
+            "            unlock_height       INTEGER NOT NULL,\n" +
+            "            lock_height         INTEGER NOT NULL,\n" +
+            "            inputs_count        INTEGER NOT NULL,\n" +
+            "            outputs_count       INTEGER NOT NULL,\n" +
+            "            payload_size        INTEGER NOT NULL,\n" +
+            "            PRIMARY KEY(block_height, tx_index)\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.tx_inputs\n" +
+            "        (\n" +
+            "            block_height        INTEGER NOT NULL,\n" +
+            "            tx_index            INTEGER NOT NULL,\n" +
+            "            in_index            INTEGER NOT NULL,\n" +
+            "            tx_hash            BLOB(64)    NOT NULL,\n" +
+            "            utxo                BLOB(64)    NOT NULL,\n" +
+            "            unlock_bytes        BLOB    NOT NULL,\n" +
+            "            unlock_age          INTEGER NOT NULL,\n" +
+            "            PRIMARY KEY(block_height, tx_index, in_index, utxo(64))\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.tx_outputs\n" +
+            "        (\n" +
+            "            block_height        INTEGER NOT NULL,\n" +
+            "            tx_index            INTEGER NOT NULL,\n" +
+            "            output_index        INTEGER NOT NULL,\n" +
+            "            tx_hash             BLOB(64)    NOT NULL,\n" +
+            "            utxo_key            BLOB(64)    NOT NULL,\n" +
+            "            amount              BIGINT NOT NULL,\n" +
+            "            lock_type           INTEGER NOT NULL,\n" +
+            "            lock_bytes          BLOB    NOT NULL,\n" +
+            "            address             TEXT    NOT NULL,\n" +
+            "            used                INTEGER NOT NULL DEFAULT 0,\n" +
+            "            PRIMARY KEY(block_height, tx_index, output_index)\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.payloads (\n" +
+            "            tx_hash             BLOB(64)    NOT NULL,\n" +
+            "            payload             BLOB    NOT NULL,\n" +
+            "            PRIMARY KEY(tx_hash(64))\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.validators\n" +
+            "        (\n" +
+            "            enrolled_at         INTEGER NOT NULL,\n" +
+            "            utxo_key            BLOB(64)    NOT NULL,\n" +
+            "            address             TEXT    NOT NULL,\n" +
+            "            amount              BIGINT NOT NULL,\n" +
+            "            preimage_distance   INTEGER NOT NULL,\n" +
+            "            preimage_hash       BLOB(64)    NOT NULL,\n" +
+            "            PRIMARY KEY(enrolled_at, utxo_key(64))\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.transaction_pool (\n" +
+            "            tx_hash             BLOB(64)    NOT NULL,\n" +
+            "            type                INTEGER NOT NULL,\n" +
+            "            payload             BLOB    NOT NULL,\n" +
+            "            lock_height         INTEGER NOT NULL,\n" +
+            "            time                INTEGER NOT NULL,\n" +
+            "            PRIMARY KEY(tx_hash(64))\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.tx_input_pool (\n" +
+            "            tx_hash             BLOB(64)    NOT NULL,\n" +
+            "            input_index         INTEGER NOT NULL,\n" +
+            "            utxo                BLOB(64)    NOT NULL,\n" +
+            "            unlock_bytes        BLOB    NOT NULL,\n" +
+            "            unlock_age          INTEGER NOT NULL,\n" +
+            "            PRIMARY KEY(tx_hash(64), input_index)\n" +
+            "        );\n" +
+            "\n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.tx_output_pool (\n" +
+            "            tx_hash             BLOB(64)    NOT NULL,\n" +
+            "            output_index        INTEGER NOT NULL,\n" +
+            "            amount              BIGINT NOT NULL,\n" +
+            "            lock_type           INTEGER NOT NULL,\n" +
+            "            lock_bytes          BLOB    NOT NULL,\n" +
+            "            address             TEXT    NOT NULL,\n" +
+            "            PRIMARY KEY(tx_hash(64), output_index)\n" +
+            "        );\n" +
+            "        \n" +
+            "        CREATE TABLE IF NOT EXISTS stoa.information (\n" +
+            "            `key` TEXT NOT NULL,\n" +
+            "            `value TEXT NOT NULL,\n" +
+            "            PRIMARY KEY(key(64), value(64))" +
+            "        );\n" +
+            "   TRUNCATE blocks;   \n" +
+            "   TRUNCATE enrollments;   \n" +
+            "   TRUNCATE transactions;   \n" +
+            "   TRUNCATE tx_inputs;   \n" +
+            "   TRUNCATE tx_outputs;   \n" +
+            "   TRUNCATE payloads;   \n" +
+            "   TRUNCATE validators;   \n" +
+            "   TRUNCATE transaction_pool;   \n" +
+            "   TRUNCATE tx_input_pool;   \n" +
+            "   TRUNCATE tx_output_pool;   \n" +
+            "   TRUNCATE information;   \n";
 
-        CREATE TABLE IF NOT EXISTS enrollments
-        (
-            block_height        INTEGER NOT NULL,
-            enrollment_index    INTEGER NOT NULL,
-            utxo_key            BLOB    NOT NULL,
-            random_seed         BLOB    NOT NULL,
-            cycle_length        INTEGER NOT NULL,
-            enroll_sig          BLOB    NOT NULL,
-            PRIMARY KEY(block_height, enrollment_index)
-        );
-
-        CREATE TABLE IF NOT EXISTS transactions
-        (
-            block_height        INTEGER NOT NULL,
-            tx_index            INTEGER NOT NULL,
-            tx_hash             BLOB    NOT NULL,
-            type                INTEGER NOT NULL,
-            unlock_height       INTEGER NOT NULL,
-            lock_height         INTEGER NOT NULL,
-            inputs_count        INTEGER NOT NULL,
-            outputs_count       INTEGER NOT NULL,
-            payload_size        INTEGER NOT NULL,
-            PRIMARY KEY(block_height, tx_index)
-        );
-
-        CREATE TABLE IF NOT EXISTS tx_inputs
-        (
-            block_height        INTEGER NOT NULL,
-            tx_index            INTEGER NOT NULL,
-            in_index            INTEGER NOT NULL,
-            tx_hash             BLOB    NOT NULL,
-            utxo                BLOB    NOT NULL,
-            unlock_bytes        BLOB    NOT NULL,
-            unlock_age          INTEGER NOT NULL,
-            PRIMARY KEY(block_height, tx_index, in_index, utxo)
-        );
-
-        CREATE TABLE IF NOT EXISTS tx_outputs
-        (
-            block_height        INTEGER NOT NULL,
-            tx_index            INTEGER NOT NULL,
-            output_index        INTEGER NOT NULL,
-            tx_hash             BLOB    NOT NULL,
-            utxo_key            BLOB    NOT NULL,
-            amount              NUMERIC NOT NULL,
-            lock_type           INTEGER NOT NULL,
-            lock_bytes          BLOB    NOT NULL,
-            address             TEXT    NOT NULL,
-            used                INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY(block_height, tx_index, output_index)
-        );
-
-        CREATE TABLE IF NOT EXISTS payloads (
-            tx_hash             BLOB    NOT NULL,
-            payload             BLOB    NOT NULL,
-            PRIMARY KEY("tx_hash")
-        );
-
-        CREATE TABLE IF NOT EXISTS validators
-        (
-            enrolled_at         INTEGER NOT NULL,
-            utxo_key            BLOB    NOT NULL,
-            address             TEXT    NOT NULL,
-            amount              NUMERIC NOT NULL,
-            preimage_distance   INTEGER NOT NULL,
-            preimage_hash       BLOB    NOT NULL,
-            PRIMARY KEY(enrolled_at, utxo_key)
-        );
-
-        CREATE TABLE IF NOT EXISTS information
-        (
-            key                 TEXT    NOT NULL,
-            value               TEXT    NOT NULL,
-            PRIMARY KEY(key)
-        );
-
-        CREATE TABLE IF NOT EXISTS transaction_pool (
-            tx_hash             BLOB    NOT NULL,
-            type                INTEGER NOT NULL,
-            payload             BLOB    NOT NULL,
-            lock_height         INTEGER NOT NULL,
-            time                INTEGER NOT NULL,
-            PRIMARY KEY(tx_hash)
-        );
-
-        CREATE TABLE IF NOT EXISTS tx_input_pool (
-            tx_hash             BLOB    NOT NULL,
-            input_index         INTEGER NOT NULL,
-            utxo                BLOB    NOT NULL,
-            unlock_bytes        BLOB    NOT NULL,
-            unlock_age          INTEGER NOT NULL,
-            PRIMARY KEY(tx_hash, input_index)
-        );
-
-        CREATE TABLE IF NOT EXISTS tx_output_pool (
-            tx_hash             BLOB    NOT NULL,
-            output_index        INTEGER NOT NULL,
-            amount              NUMERIC NOT NULL,
-            lock_type           INTEGER NOT NULL,
-            lock_bytes          BLOB    NOT NULL,
-            address             TEXT    NOT NULL,
-            PRIMARY KEY(tx_hash, output_index)
-        );
-
-        CREATE TRIGGER IF NOT EXISTS tx_trigger AFTER INSERT ON transactions
-        BEGIN
-            DELETE FROM transaction_pool WHERE tx_hash = NEW.tx_hash;
-            DELETE FROM tx_input_pool WHERE tx_hash = NEW.tx_hash;
-            DELETE FROM tx_output_pool WHERE tx_hash = NEW.tx_hash;
-        END;
-        `;
-
-        return this.exec(sql);
+        return this.create(sql);
     }
 
     /**
@@ -283,7 +286,7 @@ export class LedgerStorage extends Storages
                 .then((row: any[]) =>
                 {
                     if (row[0].height !== null)
-                        resolve(new Height(BigInt(row[0].height)));
+                        resolve(new Height(JSBI.BigInt(row[0].height)));
                     else
                         resolve(null);
                 })
@@ -487,7 +490,7 @@ export class LedgerStorage extends Storages
 
                     unlock_height_query =
                         `(
-                            SELECT '${(height.value + 2016n).toString()}' AS unlock_height WHERE EXISTS
+                            SELECT '${JSBI.add(height.value, JSBI.BigInt(2016)).toString()}' AS unlock_height WHERE EXISTS
                             (
                                 SELECT
                                     *
@@ -500,13 +503,13 @@ export class LedgerStorage extends Storages
                                     and hex(a.utxo_key) in (${utxo.join(',')})
                             )
                             UNION ALL
-                            SELECT '${(height.value + 1n).toString()}' AS unlock_height
+                            SELECT '${JSBI.add(height.value, JSBI.BigInt(1)).toString()}' AS unlock_height
                             LIMIT 1
                         )`;
                 }
                 else
                 {
-                    unlock_height_query = `( SELECT '${(height.value + 1n).toString()}' AS unlock_height )`;
+                    unlock_height_query = `( SELECT '${JSBI.add(height.value, JSBI.BigInt(1)).toString()}' AS unlock_height )`;
                 }
 
                 storage.run(
@@ -674,7 +677,7 @@ export class LedgerStorage extends Storages
 
                         for (let out_idx = 0; out_idx < block.txs[tx_idx].outputs.length; out_idx++)
                         {
-                            let utxo_key = makeUTXOKey(block.merkle_tree[tx_idx], BigInt(out_idx));
+                            let utxo_key = makeUTXOKey(block.merkle_tree[tx_idx], JSBI.BigInt(out_idx));
                             await save_output(this, block.header.height, tx_idx, out_idx,
                                 block.merkle_tree[tx_idx], utxo_key, block.txs[tx_idx].outputs[out_idx]);
                         }
@@ -990,7 +993,7 @@ export class LedgerStorage extends Storages
     {
         return new Promise<void>((resolve, reject) =>
         {
-            let sql = `INSERT OR REPLACE INTO information (key, value) VALUES (?, ?);`;
+            let sql = `REPLACE INTO information (key, value) VALUES (?, ?);`;
             this.run(sql, ["height", height.toString()])
                 .then(() =>
                 {
@@ -1020,11 +1023,11 @@ export class LedgerStorage extends Storages
                     if ((rows.length > 0) && (rows[0].value !== undefined) &&
                         Utils.isPositiveInteger(rows[0].value))
                     {
-                        resolve(new Height(BigInt(rows[0].value) + 1n));
+                        resolve(new Height(JSBI.add(JSBI.BigInt(rows[0].value), JSBI.BigInt(1)).toString()));
                     }
                     else
                     {
-                        resolve(new Height(0n));
+                        resolve(new Height("0"));
                     }
                 })
                 .catch((err) =>

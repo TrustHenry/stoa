@@ -16,13 +16,26 @@
 import mkdirp from 'mkdirp';
 import path from 'path';
 import * as sqlite from 'sqlite3';
+import mysql, {Connection} from 'mysql';
 
 export class Storages
 {
     /**
      *  The instance of sqlite
      */
-    protected db: sqlite.Database;
+    protected pool: mysql.Pool;
+
+    protected connetion_config = {
+        host: 'localhost',
+        user: 'root',
+        password: 'henry1000je',
+        database: 'stoa',
+        connectionLimit : 10,
+        queueLimit: 0,
+        waitForConnections: true,
+        multipleStatements: true,
+        acquireTimeout: 10
+    };
 
     /**
      * Constructor
@@ -35,26 +48,17 @@ export class Storages
      */
     constructor (filename: string, callback: (err: Error | null) => void)
     {
-        if (filename !== ":memory:")
-            mkdirp.sync(path.dirname(filename));
-        this.db = new sqlite.Database(filename,
-            sqlite.OPEN_CREATE | sqlite.OPEN_READWRITE |
-            sqlite.OPEN_SHAREDCACHE, (err: Error | null) =>
-            {
-                if (err != null)
-                    callback(err);
+        this.pool = mysql.createPool(this.connetion_config);
 
-                this.db.configure("busyTimeout", 1000);
-                this.createTables()
-                    .then(() =>
-                    {
-                        if (callback != null)
-                            callback(null);
-                    })
-                    .catch((err) => {
-                        if (callback != null)
-                            callback(err);
-                    });
+        this.createTables()
+            .then(() =>
+            {
+                if (callback != null)
+                    callback(null);
+            })
+            .catch((err) => {
+                if (callback != null)
+                    callback(err);
             });
     }
 
@@ -77,7 +81,7 @@ export class Storages
      */
     public close ()
     {
-        this.db.close();
+        // this.db.close();
     }
 
     /**
@@ -93,12 +97,20 @@ export class Storages
     {
         return new Promise<any[]>((resolve, reject) =>
         {
-            this.db.all(sql, params, (err: Error | null, rows: any[]) =>
-            {
-                if (!err)
-                    resolve(rows);
-                else
-                    reject(err);
+            this.pool.getConnection(function(err: any, connection: mysql.PoolConnection) {
+                if (err) reject(err);
+
+                connection.query(sql, params, function (error: any, results: any, fields: any) {
+                    connection.release();
+
+                    if (error)
+                    {
+                        reject(error);
+                        return;
+                    }
+                    else
+                        resolve(results);
+                });
             });
         });
     }
@@ -112,38 +124,50 @@ export class Storages
      * of the returned Promise is called with the result
      * and if an error occurs the `.catch` is called with an error.
      */
-    protected run (sql: string, params: any): Promise<sqlite.RunResult>
+    protected run (sql: string, params: any): Promise<any>
     {
-        return new Promise<sqlite.RunResult>((resolve, reject) =>
+        return new Promise<any>((resolve, reject) =>
         {
-            this.db.run(sql, params, function(err: Error)
-            {
-                if (!err)
-                    resolve(this);
-                else
-                    reject(err);
+            this.pool.getConnection(function(err: any, connection: mysql.PoolConnection) {
+                if (err) reject(err);
+
+                connection.query(sql, params, function (error: any, results: any, fields: any) {
+                    connection.release();
+
+                    if (error)
+                    {
+                        reject(error);
+                        return;
+                    }
+                    else
+                        resolve(results);
+                });
             });
         });
     }
 
     /**
-     * Executes the SQL query
+     * Create the SQL query
      * @param sql The SQL query to run.
      * @returns Returns the Promise. If it is finished successfully the `.then`
      * of the returned Promise is called and if an error occurs the `.catch`
      * is called with an error.
      */
-    protected exec (sql: string): Promise<void>
+    protected create (sql: string): Promise<void>
     {
         return new Promise<void>((resolve, reject) =>
         {
-            this.db.exec(sql, (err: Error | null) =>
-            {
-                if (!err)
-                    resolve();
-                else
-                    reject(err);
-            });
+            var connection: Connection = mysql.createConnection(this.connetion_config);
+                connection.query(sql, function (error: any, results: any, fields: any) {
+                    if (error)
+                    {
+                        reject(error);
+                        return;
+                    }
+                    else
+                        resolve();
+                        return;
+                });
         });
     }
 
@@ -161,14 +185,9 @@ export class Storages
     {
         return new Promise<void>((resolve, reject) =>
         {
-            this.db.run('BEGIN', (err: Error | null) =>
-            {
-                if (err == null)
-                    resolve();
-                else
-                    reject(err);
-            });
+            resolve();
         });
+        //return this.exec('BEGIN');
     }
 
     /**
@@ -182,14 +201,9 @@ export class Storages
     {
         return new Promise<void>((resolve, reject) =>
         {
-            this.db.run('COMMIT', (err: Error | null) =>
-            {
-                if (err == null)
-                    resolve();
-                else
-                    reject(err);
-            });
+            resolve();
         });
+        // return this.exec('COMMIT');
     }
 
     /**
@@ -204,13 +218,19 @@ export class Storages
     {
         return new Promise<void>((resolve, reject) =>
         {
-            this.db.run('ROLLBACK', (err: Error | null) =>
-            {
-                if (err == null)
-                    resolve();
-                else
-                    reject(err);
-            });
+            resolve();
         });
+
+        // return new Promise<void>((resolve, reject) =>
+        // {
+        //     this.pool.getConnection(function(err: any, connection: mysql.PoolConnection) {
+        //         if (err) reject(err);
+        //
+        //         connection.rollback(function () {
+        //             connection.release();
+        //             resolve();
+        //         });
+        //     });
+        // });
     }
 }
