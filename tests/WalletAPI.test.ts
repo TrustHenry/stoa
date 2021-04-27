@@ -18,6 +18,8 @@ import * as assert from 'assert';
 import URI from 'urijs';
 import { URL } from 'url';
 import { BOASodium } from 'boa-sodium-ts';
+import { IDatabaseConfig } from '../src/modules/common/Config';
+import { MockDBConfig } from './TestConfig';
 
 describe ('Test of Stoa API for the wallet', () =>
 {
@@ -26,6 +28,7 @@ describe ('Test of Stoa API for the wallet', () =>
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
+    let testDBConfig : IDatabaseConfig;
 
     before('Wait for the package libsodium to finish loading', async () =>
     {
@@ -42,17 +45,14 @@ describe ('Test of Stoa API for the wallet', () =>
 
     before ('Create TestStoa', async () =>
     {
-        stoa_server = new TestStoa(new URL("http://127.0.0.1:2826"), port);
+        testDBConfig = await MockDBConfig();
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port);
         await stoa_server.createStorage();
-    });
-
-    before ('Start TestStoa', async () =>
-    {
         await stoa_server.start();
     });
-
     after ('Stop Stoa and Agora server instances', async () =>
     {
+        await stoa_server.ledger_storage.dropTestDB(testDBConfig.database);
         await stoa_server.stop();
         await agora_server.stop();
     });
@@ -66,7 +66,7 @@ describe ('Test of Stoa API for the wallet', () =>
         let url = uri.toString();
         for (let idx = 0; idx < 10; idx++)
             await client.post(url, {block: recovery_sample_data[idx]});
-        await delay(300);
+        await delay(1000);
     });
 
     it ('Test of the path /wallet/transactions/history', async () =>
@@ -232,6 +232,7 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
+    let testDBConfig : IDatabaseConfig;
 
     before('Wait for the package libsodium to finish loading', async () =>
     {
@@ -247,17 +248,14 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
 
     before ('Create TestStoa', async () =>
     {
-        stoa_server = new TestStoa(new URL("http://127.0.0.1:2826"), port);
+        testDBConfig = await MockDBConfig();
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port);
         await stoa_server.createStorage();
-    });
-
-    before ('Start TestStoa', async () =>
-    {
         await stoa_server.start();
     });
-
     after('Stop Stoa and Agora server instances', () => {
-        return stoa_server.stop().then(() => {
+        return stoa_server.stop().then(async() => {
+            await stoa_server.ledger_storage.dropTestDB(testDBConfig.database);
             return agora_server.stop()
         });
     });
@@ -272,7 +270,7 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
         await client.post(url, {block: sample_data[0]});
         await client.post(url, {block: sample_data[1]});
         await client.post(url, {block: sample_data2});
-        await delay(500);
+        await delay(1000);
     });
 
     it('Test of the path /wallet/transaction/overview with payload', async () => {
@@ -283,34 +281,47 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
 
         let response = await client.get(uri.toString());
         let expected = {
+            status: 'Confirmed',
             height: '2',
             time: 1609460400,
             tx_hash: '0xa2073ce83b58f87d3c684bd62c1d037531edd85f7ed11d006f97af95ca65f8ae2ed8cf10f5843c8cc3f4295b787f1413acc92f449d42a587df608f5ef6d1fb7f',
             tx_type: 'payment',
+            tx_size: 1247,
             unlock_height: '3',
+            lock_height: '0',
             unlock_time: 1609461000,
             payload: '0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff',
             senders: [
-                {
-                    address: 'boa1xparc00qvv984ck00trwmfxuvqmmlwsxwzf3al0tsq5k2rw6aw427ct37mj',
-                    amount: 24400000000000,
-                    utxo: '0x2cf1caaeff65a7e2b2f7edff1023881564f2f0cad30161cf42279826e6919d77347df68de6d8eb0da58ebdc6e4f28da7569113002044467fc5cbf599a7ea9037'
-                }
+              {
+                address: 'boa1xparc00qvv984ck00trwmfxuvqmmlwsxwzf3al0tsq5k2rw6aw427ct37mj',
+                amount: 24400000000000,
+                utxo: '0x2cf1caaeff65a7e2b2f7edff1023881564f2f0cad30161cf42279826e6919d77347df68de6d8eb0da58ebdc6e4f28da7569113002044467fc5cbf599a7ea9037',
+                signature: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                index: 0,
+                unlock_age: 0,
+                bytes: '0x35d380560addb995cce0366b842cf7fe0e47f5426d41c22977e923ea9549d0a971c857ee0e3e82a7b6d23f5e2a27574ef51a6c046ecca9b4684beeab60a1db02'
+              }
             ],
             receivers: [
-                {
-                    address: 'boa1xqcmmns5swnm03zay5wjplgupe65uw4w0dafzsdsqtwq6gv3h3lcz24a8ch',
-                    amount: 1663400000,
-                    utxo: '0xcc7cd566eedab17b3fc91e06f34e02106adda4d6080b04cb8cd6eb4d2ff50d953320aa0d2c5a376ba3029d773e77403bfbe8cbe9108e1c61553fd7a0be98feca'
-                },
-                {
-                    address: 'boa1xrlj00v7wyf9vf0cm2thd58tquqxpj9xtdrh2hhfyrmag4cdkmej5nystea',
-                    amount: 24398336600000,
-                    utxo: '0xf1e7a43bc07341ee75e133476ff12df3f900a942795804ff16bcda6ec7a7e05c92b536a91ce3ee5aa22d40bff001cffdf4dae005eac00a0d7c1d1d39d3c6472e'
-                }
+              {
+                address: 'boa1xqcmmns5swnm03zay5wjplgupe65uw4w0dafzsdsqtwq6gv3h3lcz24a8ch',
+                lock_type: 0,
+                amount: '1663400000',
+                utxo: '0xcc7cd566eedab17b3fc91e06f34e02106adda4d6080b04cb8cd6eb4d2ff50d953320aa0d2c5a376ba3029d773e77403bfbe8cbe9108e1c61553fd7a0be98feca',
+                index: 0,
+                bytes: '0x39473b67e1718801a9006a4b620aef82e06d372e2a519c16efdd7ecf8c66b907c1917b358ce17af16552ef572d19ee4000ba6cb0c8419580b898718bfecf7737'
+              },
+              {
+                address: 'boa1xrlj00v7wyf9vf0cm2thd58tquqxpj9xtdrh2hhfyrmag4cdkmej5nystea',
+                lock_type: 0,
+                amount: '24398336600000',
+                utxo: '0xf1e7a43bc07341ee75e133476ff12df3f900a942795804ff16bcda6ec7a7e05c92b536a91ce3ee5aa22d40bff001cffdf4dae005eac00a0d7c1d1d39d3c6472e',
+                index: 1,
+                bytes: '0xe27c7cefbec8f06175847c7f4cf45e5b017c575ede2e50eabffe4598d2d770dbe1446c0ba4e77ef2225b97c30ffe1c81f92a4359bf541e65bf0376057fb5ef82'
+              }
             ],
             fee: '0'
-        };
+          }
         assert.deepStrictEqual(response.data, expected);
     });
 
