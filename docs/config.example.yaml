@@ -14,7 +14,7 @@ server:
 ##                               Database options                             ##
 ################################################################################
 database:
-  host : 127.0.0.1
+  host : localhost
   user : root
   database : test
   password : "root"
