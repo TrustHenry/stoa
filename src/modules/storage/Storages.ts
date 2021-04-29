@@ -13,7 +13,7 @@
 
 *******************************************************************************/
 
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import { DatabaseConfig, IDatabaseConfig } from '../common/Config';
 import { logger, Logger } from '../common/Logger';
 
@@ -209,12 +209,8 @@ export class Storages
     {
         return new Promise<void>((resolve, reject) =>
         {
-            this.db.rollback((err: Error | null) =>
-            {
-                if (err == null)
+             this.db.rollback(()=>{
                     resolve();
-                else
-                    reject(err);
             });
         });
     }

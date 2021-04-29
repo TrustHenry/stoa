@@ -9,12 +9,22 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+      
     strategy:
       matrix:
         node-version: [ 14.x, 15.x ]
-
+    env:
+      DB_DATABASE: test
+      DB_USER: root
+      DB_PASSWORD: 'root'
+      DB_HOST: 127.0.0.1
     steps:
+     
+    - run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -uroot -proot
+          mysql -e 'SHOW DATABASES;' -uroot -proot
+          mysql -e 'SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""));' -uroot -proot
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1

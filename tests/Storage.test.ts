@@ -248,8 +248,7 @@ describe ('Test for storing block data in the database', () =>
         await ledger_storage.putTransactions(block);
         await assert.rejects(ledger_storage.putTransactions(block),
             {
-                message: "ER_DUP_ENTRY: Duplicate entry '0-0'" +
-                    " for key 'transactions.PRIMARY'"
+                message: "Duplicate entry '0-0' for key 'transactions.PRIMARY'"
             });
     });
 
@@ -260,8 +259,7 @@ describe ('Test for storing block data in the database', () =>
         await ledger_storage.putEnrollments(block);
         await assert.rejects(ledger_storage.putEnrollments(block),
             {
-                message: "ER_DUP_ENTRY: Duplicate entry '0-0'" +
-                    " for key 'enrollments.PRIMARY'"
+                message: "Duplicate entry '0-0' for key 'enrollments.PRIMARY'"
             });
     });
 
@@ -271,7 +269,7 @@ describe ('Test for storing block data in the database', () =>
         await ledger_storage.putBlocks(block);
         await assert.rejects(ledger_storage.putBlocks(block),
             {
-                message: "ER_DUP_ENTRY: Duplicate entry '0' for key 'blocks.PRIMARY'"
+                message: "Duplicate entry '0' for key 'blocks.PRIMARY'"
             });
     });
 
@@ -282,7 +280,7 @@ describe ('Test for storing block data in the database', () =>
         await ledger_storage.putEnrollments(block);
         await assert.rejects(ledger_storage.putBlocks(block),
             {
-                message: "ER_DUP_ENTRY: Duplicate entry '0-0' for key 'enrollments.PRIMARY'"
+                message: "Duplicate entry '0-0' for key 'enrollments.PRIMARY'"
             });
 
         let rows0: any[] = await ledger_storage.getBlock(new Height("0"));

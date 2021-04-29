@@ -790,11 +790,11 @@ describe ('Test of Stoa API Server', () =>
             random_seed: '0x691775809b9498f45a2c5ef8b8d552e318ebaf0b1b2fb15dcc39e0ec962ae9812d7edffa5f053590a895c9ff72c1b0838ce8f5c709579d4529f9f4caf0fab13d',
             time: 1609459800,
             version: 'v0.x.x',
-            total_sent: 4880000000000000,
-            total_recieved: 4880000000000000,
-            total_reward: 0,
-            total_fee: 0,
-            total_size: 9328
+            total_sent: '4880000000000000',
+            total_recieved: '4880000000000000',
+            total_reward: '0',
+            total_fee: '0',
+            total_size: '9328'
           }
         assert.deepStrictEqual(response.data, expected);
     });
@@ -925,7 +925,7 @@ describe ('Test of Stoa API Server', () =>
               {
                 height: '0',
                 tx_hash: '0x4ef4f7195db2e20f36b46cb3cda1f529b77e2cd8423241d1a4a779f3d7845d4f6543a6147956bf4fe52d5f5925a04102de59b2854f90fb3e8cc1a0e85fe9b11d',
-                amount: 4880000000000000,
+                amount: '4880000000000000',
                 type: 0,
                 fee: 0,
                 size: 337,
@@ -969,7 +969,7 @@ describe ('Test of Stoa API Server', () =>
               {
                 height: '0',
                 tx_hash: '0xb8f5a5f4544e75b5837a370d0070361aaaf97d3b02070d3d9845598c5f55105b6bd9ac8e9c53e74679db77cb512ffd88a9916754744f6b5eb2a812929651f84f',
-                amount: 120000000000000,
+                amount: '120000000000000',
                 type: 1,
                 fee: 0,
                 size: 255,
@@ -1020,7 +1020,7 @@ describe ('Test of Stoa API Server', () =>
               {
                 height: '0',
                 tx_hash: '0x4ef4f7195db2e20f36b46cb3cda1f529b77e2cd8423241d1a4a779f3d7845d4f6543a6147956bf4fe52d5f5925a04102de59b2854f90fb3e8cc1a0e85fe9b11d',
-                amount: 4880000000000000,
+                amount: '4880000000000000',
                 type: 0,
                 fee: 0,
                 size: 337,
@@ -1064,7 +1064,7 @@ describe ('Test of Stoa API Server', () =>
               {
                 height: '0',
                 tx_hash: '0xb8f5a5f4544e75b5837a370d0070361aaaf97d3b02070d3d9845598c5f55105b6bd9ac8e9c53e74679db77cb512ffd88a9916754744f6b5eb2a812929651f84f',
-                amount: 120000000000000,
+                amount: '120000000000000',
                 type: 1,
                 fee: 0,
                 size: 255,

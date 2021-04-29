@@ -1030,7 +1030,7 @@ class Stoa extends WebService
                 let tx: Array<IBlockTransactionElements> = [];
                 for (const row of data.tx) {
                     tx.push(
-    {
+                         {
                             height: JSBI.BigInt(row.block_height).toString(),
                             tx_hash: new Hash(row.tx_hash, Endian.Little).toString(),
                             amount: row.amount,
@@ -1039,9 +1039,9 @@ class Stoa extends WebService
                             size: row.tx_size,
                             time: row.time_stamp,
                             sender_address: row.sender_address,
-                            receiver: JSON.parse(row.receiver),
+                            receiver:row.receiver,
                         }
-                    );
+                    ); 
                 }
 
                 let transactionList: IBlockTransactions = {
