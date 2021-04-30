@@ -196,19 +196,43 @@ export class ServerConfig implements IServerConfig
 export class DatabaseConfig implements IDatabaseConfig
 {
     /**
-     * The database file name
+     * The host of mysql
      */
-    public filename: string;
+    host: string
+    /**
+     * the user of mysql
+     */
+    user: string
+    /**
+     * the pasword of mysql
+     */
+    password: string
+    /**
+     * the database name
+     */
+    database?: string
+    /** 
+     * multiple Statements exec config
+    */
+    multipleStatements: boolean
 
     /**
      * Constructor
-     * @param filename The database file name
+     * @param host Mysql database host
+     * @param user Mysql database user
+     * @param password Mysql database password
+     * @param database Mysql database name
+     * @param multipleStatements Mysql allow multiple statement to execute (true / false)
      */
-    constructor (filename?: string)
-    {
+    constructor(host?: string, user?: string, password?: string, database?: string, multipleStatements?: boolean
+    ) {
         let conf = extend(true, {}, DatabaseConfig.defaultValue());
-        extend(true, conf, {filename: filename});
-        this.filename = path.resolve(Utils.getInitCWD(), conf.filename);
+        extend(true, conf, { host: host, user: user, password: password, database: database, multipleStatements: multipleStatements });
+        this.host = conf.host;
+        this.user = conf.user;
+        this.password = conf.password;
+        this.database = conf.database;
+        this.multipleStatements = conf.multipleStatements;
     }
 
     /**
@@ -219,7 +243,11 @@ export class DatabaseConfig implements IDatabaseConfig
     {
         let conf = extend(true, {}, DatabaseConfig.defaultValue());
         extend(true, conf, config);
-        this.filename = path.resolve(Utils.getInitCWD(), conf.filename);
+        this.host = conf.host;
+        this.user = conf.user;
+        this.password = conf.password;
+        this.database = conf.database;
+        this.multipleStatements = conf.multipleStatements;
     }
 
     /**
@@ -228,7 +256,11 @@ export class DatabaseConfig implements IDatabaseConfig
     public static defaultValue (): IDatabaseConfig
     {
         return {
-            filename: path.resolve(Utils.getInitCWD(), "data/main.db")
+            host: 'localhost',
+            user: 'root',
+            password: '12345678',
+            database: 'boascan',
+            multipleStatements: true,
         }
     }
 }
@@ -360,9 +392,25 @@ export interface IServerConfig
 export interface IDatabaseConfig
 {
     /**
-     * The database file name
+     * The host of mysql
      */
-    filename: string;
+    host: string
+    /**
+     * The user of mysql
+     */
+    user: string
+    /**
+     * The pasword of mysql
+     */
+    password: string
+    /**
+     * The database name
+     */
+    database?: string
+    /** 
+     * Multiple Statements execution statement Option
+     */
+    multipleStatements: boolean
 }
 
 /**

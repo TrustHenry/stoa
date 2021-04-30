@@ -14,7 +14,10 @@ server:
 ##                               Database options                             ##
 ################################################################################
 database:
-  filename: data/main.db
+  host : localhost
+  user : root
+  database : test
+  password : "root"
 
 ################################################################################
 ##                               Logging options                              ##
