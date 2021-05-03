@@ -112,6 +112,7 @@ describe ('Test of Stoa API for the wallet', () =>
             unlock_time: 1609465200,
             payload: '',
             senders: [
+<<<<<<< HEAD
                 {
                     address: 'boa1xrk00cupup5vxwpz09kl9rau78cwag28us4vuctr6zdxvwfzaht9v6tms8q',
                     amount: 610000000000000,
@@ -124,6 +125,27 @@ describe ('Test of Stoa API for the wallet', () =>
                     amount: 610000000000000,
                     utxo: '0x718c57bc74ef0ded4311e7013e146834c58b20c5525919947c37482be7778b95bb7e57faacde1fc5638f6f41d30b8a790a1effffd8385e112ee1e539c41e6ecf'
                 }
+=======
+              {
+                address: 'boa1xrg66j9mgk20kflzdzrq4p3k4gw8tg6vk3pa3fgm3twsagyaxa8luz7e3vu',
+                amount: 610000000000000,
+                utxo: '0xff4b4812d0e8e513de683cec8546a92e503f04a83340c9dd96f7897438abdc6cea69639df8703299a181d7083db2c18a753f4b20d10fafb68be54b1cc85b7b7d',
+                signature: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                index: 0,
+                unlock_age: 0,
+                bytes: '0x275c6e592ff90f41244520adcb6a28e4d78498fd4842a1e2e2ec6e916fcb6a95ad266027ef8d9891f1d1af3b68c1c3d44f5fe1586e06ada84e361d847712870b'
+              }
+            ],
+            receivers: [
+              {
+                address: 'boa1xrq66nug6wnen9sp5cm7xhfw03yea8e9x63ggay3v5dhe6d9jerqz50eld0',
+                lock_type: 0,
+                amount: 610000000000000,
+                utxo: '0x435f19a00fdcb41847588c275e1dd82a867f2a56595265f92ad3bc573d5f0bb52e8546f215c853e68c6aaddc82e91043af73e8279609b822b5fd8ea7b946483c',
+                index: 0,
+                bytes: '0x05e7e9c06eebd0d925078eadb875fed18f504470017a01b54d80d4b00652fd3d7a43d8b82cfc65d27e11cdcc195b2eca881dc56c9b97dcb7923382c595406068'
+              }
+>>>>>>> Feature: Error handling was added
             ],
             fee: '0'
         };
@@ -293,9 +315,15 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
             payload: '0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff',
             senders: [
               {
+<<<<<<< HEAD
                 address: 'boa1xparc00qvv984ck00trwmfxuvqmmlwsxwzf3al0tsq5k2rw6aw427ct37mj',
                 amount: 24400000000000,
                 utxo: '0x2cf1caaeff65a7e2b2f7edff1023881564f2f0cad30161cf42279826e6919d77347df68de6d8eb0da58ebdc6e4f28da7569113002044467fc5cbf599a7ea9037',
+=======
+                address: 'boa1xrqx366yn8xktzhtsj83gj0nnj35cv8lrk7xhszj0dfemlacumgujs595mr',
+                amount: 24400000000000,
+                utxo: '0x79170f924260def767d30e9eb606379c59b26ab5b575097f760507e889ba097e458a19aead724e10cf15313a1da7094c5c7e708c12e91a58f1f922bd6a5da0a5',
+>>>>>>> Feature: Error handling was added
                 signature: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 index: 0,
                 unlock_age: 0,
@@ -306,16 +334,26 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
               {
                 address: 'boa1xqcmmns5swnm03zay5wjplgupe65uw4w0dafzsdsqtwq6gv3h3lcz24a8ch',
                 lock_type: 0,
+<<<<<<< HEAD
                 amount: '1663400000',
                 utxo: '0xcc7cd566eedab17b3fc91e06f34e02106adda4d6080b04cb8cd6eb4d2ff50d953320aa0d2c5a376ba3029d773e77403bfbe8cbe9108e1c61553fd7a0be98feca',
+=======
+                amount: 1663400000,
+                utxo: '0x695ebd4843c0bab6966d4457648f0d85371361647af9bfb9dd7a7a553257efdc0be38700032cb362e614933d2d00590a98d03679a94edf573b6d574158b201cc',
+>>>>>>> Feature: Error handling was added
                 index: 0,
                 bytes: '0x39473b67e1718801a9006a4b620aef82e06d372e2a519c16efdd7ecf8c66b907c1917b358ce17af16552ef572d19ee4000ba6cb0c8419580b898718bfecf7737'
               },
               {
                 address: 'boa1xrlj00v7wyf9vf0cm2thd58tquqxpj9xtdrh2hhfyrmag4cdkmej5nystea',
                 lock_type: 0,
+<<<<<<< HEAD
                 amount: '24398336600000',
                 utxo: '0xf1e7a43bc07341ee75e133476ff12df3f900a942795804ff16bcda6ec7a7e05c92b536a91ce3ee5aa22d40bff001cffdf4dae005eac00a0d7c1d1d39d3c6472e',
+=======
+                amount: 24398336600000,
+                utxo: '0xba8a96eb3bcbc673f61652e3b6ba1c29c3f6fb996af95bcb2afe7e0d347bf1100a1bce76e64aa60f0a50bf1587b5dc01a03d32a45746656d46cfe8b073bce9a3',
+>>>>>>> Feature: Error handling was added
                 index: 1,
                 bytes: '0xe27c7cefbec8f06175847c7f4cf45e5b017c575ede2e50eabffe4598d2d770dbe1446c0ba4e77ef2225b97c30ffe1c81f92a4359bf541e65bf0376057fb5ef82'
               }
