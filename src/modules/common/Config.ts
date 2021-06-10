@@ -132,6 +132,11 @@ export class ServerConfig implements IServerConfig
     public port: number;
 
     /**
+     * The trusted port
+     */
+    public trusted_port: number;
+
+    /**
      * The endpoint of Agora
      */
     public agora_endpoint: URL;
@@ -155,6 +160,7 @@ export class ServerConfig implements IServerConfig
 
         this.address = conf.address;
         this.port = conf.port;
+        this.trusted_port = conf.trusted_port;
         this.agora_endpoint = conf.agora_endpoint;
     }
 
@@ -174,6 +180,7 @@ export class ServerConfig implements IServerConfig
         }
         this.address = conf.address;
         this.port = conf.port;
+        this.trusted_port = config.trusted_port;
         this.agora_endpoint = conf.agora_endpoint;
     }
 
@@ -185,6 +192,7 @@ export class ServerConfig implements IServerConfig
         return {
             address: "127.0.0.1",
             port: 3836,
+            trusted_port: 3835,
             agora_endpoint: new URL("http://127.0.0.1:2826")
         }
     }
@@ -220,7 +228,7 @@ export class DatabaseConfig implements IDatabaseConfig
      */
     port: number
 
-    /** 
+    /**
      * multiple Statements exec config
     */
     multipleStatements: boolean
@@ -410,6 +418,11 @@ export interface IServerConfig
     port: number;
 
     /**
+     * The trusted port
+     */
+    trusted_port: number;
+
+    /**
      * The endpoint of Agora
      */
     agora_endpoint: URL;
@@ -440,7 +453,7 @@ export interface IDatabaseConfig
      * The host database port
      */
      port: number
-    /** 
+    /**
      * Multiple Statements execution statement Option
      */
     multipleStatements: boolean

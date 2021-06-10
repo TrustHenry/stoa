@@ -6,7 +6,8 @@ server:
   address: "0.0.0.0"
   # Port on which we bind (default: 3836)
   port:    4242
-
+  # Port to connect with trusted Agora (default: 3835)
+  trusted_port: 4241
   # Endpoint of Agora
   agora_endpoint: http://127.1.1.1:4567
 

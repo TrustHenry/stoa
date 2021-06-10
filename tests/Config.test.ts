@@ -24,6 +24,7 @@ describe('Test of Config', () => {
                 "server:",
                 "   address: 127.0.0.1",
                 "   port:    3838",
+                "   trusted_port: 3837",
                 "   agora_endpoint: http://127.0.0.1:2826",
                 "database:",
                 "   host : 127.0.0.1",
@@ -41,6 +42,7 @@ describe('Test of Config', () => {
         config.readFromString(config_content);
         assert.strictEqual(config.server.address, "127.0.0.1");
         assert.strictEqual(config.server.port.toString(), "3838");
+        assert.strictEqual(config.server.trusted_port.toString(), "3837");
         assert.strictEqual(config.server.agora_endpoint.toString(), "http://127.0.0.1:2826");
         assert.strictEqual(config.database.host, "127.0.0.1");
         assert.strictEqual(config.database.user, "root");
