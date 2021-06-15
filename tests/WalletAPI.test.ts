@@ -27,6 +27,7 @@ describe ('Test of Stoa API for the wallet', () =>
 {
     let host: string = 'http://localhost';
     let port: string = '3837';
+    let trusted_port: string = '3836;';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -59,7 +60,7 @@ describe ('Test of Stoa API for the wallet', () =>
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
         await stoa_server.start();
     });
@@ -254,6 +255,7 @@ describe ('Test of Stoa API for the wallet', () =>
 describe ('Test of Stoa API for the wallet with `sample_data`', () => {
     let host: string = 'http://localhost';
     let port: string = '3837';
+    let trusted_port: string = '3836';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -286,7 +288,7 @@ describe ('Test of Stoa API for the wallet with `sample_data`', () => {
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
         await stoa_server.start();
     });

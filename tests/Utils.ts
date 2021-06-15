@@ -290,8 +290,9 @@ export class TestAgora implements FullNodeAPI
  * The test code allows the API server to be started and shut down.
  */
 export class TestStoa extends Stoa {
-    constructor(testDBConfig: IDatabaseConfig, agora_endpoint: URL, port: number | string, testCoinMarketService: CoinMarketService) {
-        super(testDBConfig, agora_endpoint, port, "127.0.0.1", 1609459200, testCoinMarketService);
+    constructor(testDBConfig:IDatabaseConfig, agora_endpoint: URL, port: number | string, trusted_port: number | string,
+                testCoinMarketService: CoinMarketService) {
+        super(testDBConfig, agora_endpoint, port, trusted_port, "127.0.0.1", 1609459200, testCoinMarketService);
     }
 
     public stop(): Promise<void> {

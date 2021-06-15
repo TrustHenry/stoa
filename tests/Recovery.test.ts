@@ -48,9 +48,9 @@ import { CoinGeckoMarket } from '../src/modules/coinmarket/CoinGeckoMarket';
  */
 class TestRecoveryStoa extends TestStoa
 {
-    constructor (testDBConfig :IDatabaseConfig,agora_endpoint: URL, port: number | string, coinMarketService: CoinMarketService )
-    {
-        super(testDBConfig,agora_endpoint, port, coinMarketService);
+    constructor(testDBConfig:IDatabaseConfig, agora_endpoint: URL, port: number | string, trusted_port: number | string,
+                testCoinMarketService: CoinMarketService) {
+        super(testDBConfig, agora_endpoint, port, trusted_port, testCoinMarketService);
 
         this.app.get("/block",
             async (req: express.Request, res: express.Response) =>
@@ -86,6 +86,7 @@ describe ('Test of Recovery', () =>
 {
     const agora_addr: URL = new URL('http://localhost:2820');
     const stoa_addr: URL = new URL('http://localhost:3837/');
+    const trusted_port: string = '3836';
     let agora_node: TestAgora;
     let stoa_server: TestRecoveryStoa;
     let testDBConfig : IDatabaseConfig;
@@ -123,7 +124,7 @@ describe ('Test of Recovery', () =>
     before ('Create TestStoa and start it', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestRecoveryStoa(testDBConfig,agora_addr, stoa_addr.port, coinMarketService);
+        stoa_server = new TestRecoveryStoa(testDBConfig,agora_addr, stoa_addr.port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
         await stoa_server.start();
     });

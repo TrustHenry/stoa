@@ -44,6 +44,7 @@ describe ('Test of Stoa API Server', () =>
 {
     let host: string = 'http://localhost';
     let port: string = '3837';
+    let trusted_port: string = '3836';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -77,7 +78,7 @@ describe ('Test of Stoa API Server', () =>
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig, new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig, new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
     });
 
@@ -691,6 +692,7 @@ describe ('Test of the path /utxo', () =>
 {
     let host: string = 'http://localhost';
     let port: string = '3837';
+    let trusted_port: string = '3836';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -722,7 +724,7 @@ describe ('Test of the path /utxo', () =>
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
         await stoa_server.start();
     });
@@ -809,6 +811,7 @@ describe ('Test of the path /utxo for freezing', () =>
 {
     let host: string = 'http://localhost';
     let port: string = '3837';
+    let trusted_port: string = '3836';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -845,7 +848,7 @@ describe ('Test of the path /utxo for freezing', () =>
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
         await stoa_server.start();
     });
@@ -1015,6 +1018,7 @@ describe ('Test of the path /merkle_path', () =>
     let port: string = '3837';
     let agora_host: string = 'http://localhost';
     let agora_port: string = '2826';
+    let trusted_port: string = '3836';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -1047,7 +1051,7 @@ describe ('Test of the path /merkle_path', () =>
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig,new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
         await stoa_server.start();
     });

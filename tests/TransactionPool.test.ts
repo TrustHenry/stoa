@@ -175,6 +175,7 @@ describe ('Test of double spending transaction', () =>
 {
     let host: string = 'http://localhost';
     let port: string = '3837';
+    let trusted_port: string = '3836';
     let stoa_server: TestStoa;
     let agora_server: TestAgora;
     let client = new TestClient();
@@ -216,7 +217,7 @@ describe ('Test of double spending transaction', () =>
     before ('Create TestStoa', async () =>
     {
         testDBConfig = await MockDBConfig();
-        stoa_server = new TestStoa(testDBConfig, new URL("http://127.0.0.1:2826"), port, coinMarketService);
+        stoa_server = new TestStoa(testDBConfig, new URL("http://127.0.0.1:2826"), port, trusted_port, coinMarketService);
         await stoa_server.createStorage();
     });
 

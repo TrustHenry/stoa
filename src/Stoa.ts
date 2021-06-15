@@ -70,11 +70,13 @@ class Stoa extends WebService
      * @param databaseConfig Mysql database configuration
      * @param agora_endpoint The network endpoint to connect to Agora
      * @param port The network port of Stoa
+     * @param port The network trusted port of Stoa
      * @param address The network address of Stoa
      * @param genesis_timestamp The genesis timestamp
      */
-    constructor(databaseConfig:IDatabaseConfig, agora_endpoint: URL, port: number | string, address: string, genesis_timestamp: number, coinMarketService: CoinMarketService) {
-        super(port, address);
+    constructor(databaseConfig:IDatabaseConfig, agora_endpoint: URL, port: number | string, trusted_port: number | string,
+        address: string, genesis_timestamp: number, coinMarketService: CoinMarketService) {
+        super(port, trusted_port, address);
 
         this.genesis_timestamp = genesis_timestamp;
         this._ledger_storage = null;
