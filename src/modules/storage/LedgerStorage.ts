@@ -13,6 +13,7 @@
 
 import {
     Block,
+    BlockHeader,
     Endian,
     Enrollment,
     Hash,
@@ -210,6 +211,17 @@ export class LedgerStorage extends Storages {
             merkle_index        INTEGER     NOT NULL,
             merkle_hash         TINYBLOB    NOT NULL,
             PRIMARY KEY(block_height, merkle_index)
+        );
+
+        CREATE TABLE IF NOT EXISTS blocks_header_updated_history
+        (
+            block_height        INTEGER  NOT NULL,
+            updated_time        INTEGER  NOT NULL,
+            hash                TINYBLOB NOT NULL,
+            validators          TEXT     NOT NULL,
+            signature           TINYBLOB NOT NULL,
+            missing_validators  TEXT     NULL,
+            PRIMARY KEY(height, updated_time)
         );
 
         CREATE TABLE IF NOT EXISTS information
@@ -651,6 +663,71 @@ export class LedgerStorage extends Storages {
                 resolve();
             })();
         });
+    }
+
+    /**
+     * Update a blockHeader
+     * The blockheader can have signatures from validators
+     * added even after the block has been externalized.
+     */
+    public updateBlockHeader(block_header: BlockHeader): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            this.run(
+                `UPDATE blocks
+                    SET validators = ?,
+                        signature = ?,
+                        missing_validators = ?
+                    WHERE
+                        height = ?`,
+                [
+                    block_header.validators.toString(),
+                    block_header.signature.toString(),
+                    block_header.missing_validators.toString(),
+                    block_header.height.toString(),
+                ]
+            )
+                .then((result) => {
+                    resolve(result.affectedRows);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
+    /**
+     * Puts a block header updated history to database
+     * @param block a block header data
+     * @returns Returns the Promise. If it is finished successfully the `.then`
+     * of the returned Promise is called and if an error occurs the `.catch`
+     * is called with an error.
+     */
+    public putBlockHeaderHistory(header: BlockHeader): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            // That's not gonna happen. Check if the hash changes.
+            const hash = hashFull(header);
+            this.run(
+                    `INSERT INTO blocks_header_updated_history
+                    (block_height, hash, validators, signature, missing_validators, updated_time)
+                    VALUES
+                    (?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                        header.height.toString(),
+                        hash.toBinary(Endian.Little),
+                        header.validators.toString(),
+                        header.signature.toBinary(Endian.Little),
+                        header.missing_validators.toString(),
+                        moment().unix(),
+                    ]
+                )
+                .then((result) => {
+                    resolve(result.affectedRows);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+            });
+        }
     }
 
     /**

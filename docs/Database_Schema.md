@@ -279,6 +279,34 @@ CREATE TABLE IF NOT EXISTS "merkle_trees" (
 ```
 ----
 
+## 10. Table **blocks_header_updated_history**
+
+### _Schema_
+
+| Column            | Data Type | PK | Not NULL | Default  |Description|
+|:----------------- |:--------- |:--:|:--------:| -------- | --------- |
+| block_height      | INTEGER   | Y  | Y        |          | The height of the block |
+| updated_time      | INTEGER   | Y  | Y        |          | Updated timestamp |
+| hash              | TINYBLOB  |    | Y        |          | The hash of the current block |
+| validators        | TEXT      |    | Y        |          | BitMask containing the validators' key indices which signed the block |
+| signature         | TINYBLOB  |    | Y        |          | Schnorr multisig of all validators which signed this block |
+| missing_validators| TEXT      |    | N        |          | List of indices to the validator UTXO set which have not revealed the preimage |
+
+### _Create Script_
+
+```sql
+CREATE TABLE IF NOT EXISTS "blocks_header_updated_history" 
+    "block_height"        INTEGER  NOT NULL,
+    "updated_time"        INTEGER  NOT NULL,
+    "hash"                TINYBLOB NOT NULL,
+    "validators"          TEXT     NOT NULL,
+    "signature"           TINYBLOB NOT NULL,
+    "missing_validators   TEXT     NULL,
+    PRIMARY KEY("height","updated_time")
+)
+```
+----
+
 ## 10. Table **information**
 
 It can store information that is required for operation.
